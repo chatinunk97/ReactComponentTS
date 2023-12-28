@@ -1,46 +1,81 @@
-# Getting Started with Create React App
+# Typescript with React Component
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Parents and Children Component
+TS helps us to check we are sending the PROPS correctly and using it properly
 
-## Available Scripts
+- 1 Way : Using Interface to add type annotation to the props
+  Downside : TS doesn't know that this is an React Component , they will it as a function
+  React Component has some props provided auto like propTypes displayName defaultProps contextTypes which TS now is't aware of
 
-In the project directory, you can run:
+```
+interface ChildProps {
+  color: string;
+}
 
-### `npm start`
+export const Child = ({ color }: ChildProps) => {
+  return <div>{color}</div>;
+};
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- 2 Using React.FC
 
-### `npm test`
+We are telling TS that this is a React Component and which takes a props color
+and also other React component props that is auto added
+(Well if you don't want to use the prop that is auto stick with React Component you might get back to 1.)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```
+export const ChildAsFC: React.FC<ChildProps> = ({ color }) => {
+  return <div>{color}</div>;
+};
 
-### `npm run build`
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# There's nothing much to Functional component TS
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+import { useState } from "react";
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+const GuestList: React.FC = () => {
+  const [name, setName] = useState("");
+  const [guests, setGuests] = useState([]);
 
-### `npm run eject`
+  const onClick = (name) => {
+    setName("");
+    setGuests([...guests, name]);
+  };
+  return (
+    <div>
+      <h3>Guest List\</h3>
+      <input
+        value={name}
+        onChange={(e) => {
+          setName(e.target.value);
+        }}
+      />
+      <button
+        onClick={() => {
+          onClick(name);
+        }}
+      >
+        Add Guest
+      </button>
+    </div>
+  );
+};
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+export default GuestList;
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+This is our typical React Component
+except the type annotation to the React Compoennt itself
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
+GuestList: React.FC
+```
 
-## Learn More
+However now there's an error with TS on the useState()
+TS tries to apply type inference (the way TS knows the type without we doing type annotation) but they will not now useState([]) it will be "never[]"
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+TS will think that the array will always be an empty array. So we need to give TS a hint
