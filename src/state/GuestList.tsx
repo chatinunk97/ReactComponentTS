@@ -6,6 +6,7 @@ const GuestList: React.FC = () => {
 
   const onClick = () => {
     setName("");
+    // This just normal spread
     setGuests([...guests, name]);
   };
   return (
