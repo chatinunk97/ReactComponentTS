@@ -1,11 +1,15 @@
 import { useState } from "react";
 
 const GuestList: React.FC = () => {
+  //Normal usestate in react component 
+  // differs from Class component
   const [name, setName] = useState("");
+  const [ testState , setTestState] = useState('')
   const [guests, setGuests] = useState<string[]>([]);
 
   const onClick = () => {
     setName("");
+    // This just normal spread
     setGuests([...guests, name]);
   };
   return (

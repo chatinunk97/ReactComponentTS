@@ -21,5 +21,5 @@ const App = () => {
     </div>
   );
 };
-
+// React18 we don't use this anymore tho
 ReactDOM.render(<App />, document.querySelector("#root"));
