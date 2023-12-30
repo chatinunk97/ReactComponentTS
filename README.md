@@ -79,3 +79,115 @@ However now there's an error with TS on the useState()
 TS tries to apply type inference (the way TS knows the type without we doing type annotation) but they will not now useState([]) it will be "never[]"
 
 TS will think that the array will always be an empty array. So we need to give TS a hint
+
+I assume useState here is also a generic function so we can put in string[]
+
+```
+  const [guests, setGuests] = useState<string[]>([]);
+```
+
+# TS with event handler
+
+This is the typical Component we use in React
+but if we implement this directly TS will error the (e)
+
+```
+export const EventComponent: React.FC = () => {
+  const onChange = (e) => {
+    console.log(e);
+  };
+  return (
+    <div>
+      <input onChange={onChange} />
+    </div>
+  );
+};
+```
+
+Note that if it's an Inline event there would not be an error
+
+```
+<input onChange={(e)=>{console.log(e)}} />
+```
+
+WHY ?
+
+This is because TS is aware of the type onChange which will auto get an event argument
+(Type inference system)
+
+However, this does not happen to the function onChange we define beforehand
+because it's not known to TS where this functon will be executed
+
+- Add " React.ChangeEvent<HTMLInputElement> "
+
+```
+export const EventComponent: React.FC = () => {
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target.value);
+  };
+  return (
+    <div>
+      <input onChange={onChange} />
+    </div>
+  );
+};
+```
+
+But like we knoe there are many event handler to handle
+The easy way to find the right types for each event handler, just ctrl + click on the onClick / onChange prop that's it
+
+# useRef with TS
+
+Just a recap useRef is used to store a reference to an HTML element
+which normally be done by just defining a useRef to a variable and stick it to a HTML element by ref={theuseRef}
+
+```
+  const inputRef = useRef<HTMLInputElement>();
+  .
+  .
+  .
+  .
+   return (
+    <div>
+      User Search
+      <input
+        ref={inputRef}
+        value={name}
+        onChange={(e) => {
+          setName(e.target.value);
+        }}
+      />
+
+```
+
+But for TS we must be more specific, of course, we just put in the type accordingly to the HTML element that we are planning to stick the useRef with
+
+However, this still shows an error at ref
+Because eventho we define the inputRef we 'might' not assigned it to anything
+like ust create the ref and do nothing so the value MAY be null in some case.
+So we must handle that too
+
+```
+const inputRef = useRef<HTMLInputElement | null>(null);
+```
+
+Remeber since the useRef can be null we have to check it first before doing the focus
+
+```
+  useEffect(() => {
+    if (!inputRef.current) {
+      return;
+    }
+    inputRef.current.focus();
+  }, []);
+```
+
+This is a handy way to make some input already focussed when the user enter the page so they can type righ away without having to click on the input box
+
+The main take away from using hooks in a React Component
+
+Find the right type or the generic function !
+
+```
+const inputRef = useRef<HTMLInputElement | null>(null);
+```
